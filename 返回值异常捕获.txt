@@ -1,0 +1,76 @@
+
+public class ResultFilterAttribute : System.Web.Mvc.ActionFilterAttribute
+    {
+        public override void OnActionExecuted(ActionExecutedContext filterContext)
+        {
+
+            if (filterContext.Exception != null)
+            {
+                base.OnActionExecuted(filterContext);
+                return;
+            }
+            if (filterContext.Result is JsonResult)
+            {
+                var invokeResult = new InvokeResult<object>
+                {
+                    Success = true
+                };
+                var result = filterContext.Result as JsonResult;
+                invokeResult.Data = result.Data;
+                result.Data = invokeResult;
+                base.OnActionExecuted(filterContext);
+                return;
+            }
+
+            base.OnActionExecuted(filterContext);
+            return;
+
+        }
+    }
+复制代码
+ 
+
+ 
+
+对异常信息处理，避免黄页显示
+
+ 
+
+复制代码
+public class MvcExceptionFilterAttribute : IExceptionFilter
+    {
+        public void OnException(ExceptionContext filterContext)
+        {
+
+            var invokeResult = new InvokeResult<object>();
+            
+            if(filterContext.Exception is DomainException)
+            {
+                invokeResult.Message = filterContext.Exception.Message;
+            }
+            else
+            {
+                invokeResult.Message = filterContext.Exception.Message + (filterContext.Exception.StackTrace??"");
+                //记录日志
+            }
+            var jsonResult = new JsonResult
+            {
+                Data = invokeResult,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+            filterContext.ExceptionHandled = true;
+            filterContext.Result = jsonResult;
+
+            
+        }
+    }
+复制代码
+ 
+
+最后全局注册
+
+        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+        {
+            filters.Add(new ResultFilterAttribute());
+            filters.Add(new MvcExceptionFilterAttribute());
+        }
