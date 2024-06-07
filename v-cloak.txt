@@ -1,0 +1,7 @@
+1 [v-cloak] {
+2   display: none;
+3 }
+
+1 <div id="app" v-cloak>
+2     {{year}}
+3 </div>
