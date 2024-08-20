@@ -1,0 +1,170 @@
+// spr璾
+// Token: 0x0601007F RID: 65663
+internal static spr癝_LicenseInfo 권_VerifyLicense(spr癝_LicenseInfo A_0, Type A_1, object A_2)
+{
+        if (A_0 == null)
+        {
+                return null;
+        }
+        Assembly assembly = Assembly.GetAssembly(A_1);
+        AssemblyName name = assembly.GetName();
+        string text = spr璾.권(assembly);
+        text = text.Replace(".Office.", ".");
+
+        PackageAttribute[] array = PackageAttribute.GetPackage(assembly); // 取程序集上的 Package 特性
+        PackageAttribute packageAttribute = null;
+        DateTime? dateTime;
+
+        PackageAttribute[] array2 = spr璾.권(assembly, array, out dateTime);  
+        // 这里又过了一次 特性校验 有兴趣可以自己深入
+        // dateTime 默认是 程序集特性 [assembly: ReleaseDate("2023-04-27")] 但是 会过一次解码验证 可能被重新赋值。
+        // 由于我们对这些不做改动 所以略过
+        if (array2 != null)
+        {
+                array = array2;
+        }
+        spr眃_ProductInfo spr眃_ProductInfo = null;
+        spr眃_ProductInfo[] array3 = A_0.꿑_GetProductInfos();
+        int i = 0;
+        while (i < array3.Length)
+        {
+                spr眃_ProductInfo spr眃_ProductInfo2 = array3[i];
+                string text2 = spr眃_ProductInfo2.권_Name().Replace(".Office.", ".");
+                //版本号得有效 至少大于 1.3
+                if (((A_0.녰_GetMergedLicenseVersionInfo() != null && A_0.녰_GetMergedLicenseVersionInfo().권_DiffVersion(1, 3) >= 0) || (A_0.녰_GetMergedLicenseVersionInfo() == null && A_0.뉩_GetLicenseVersionInfo().권_DiffVersion(1, 3) >= 0)) && array != null && array.Length != 0)
+                {
+                        PackageAttribute[] array4 = array;
+                        int j = 0;
+                        while (j < array4.Length)
+                        {
+                                PackageAttribute packageAttribute2 = array4[j];
+                                if (!packageAttribute2.Name.Equals(text2))
+                                {
+                                        j++;
+                                }
+                                else
+                                {
+                                        packageAttribute = packageAttribute2;
+                                        spr眃_ProductInfo = spr眃_ProductInfo2;
+                                        IL_EC:
+                                        if (spr眃_ProductInfo == null)
+                                        {
+                                                goto IL_F0;
+                                        }
+                                        goto IL_111; // license 中的 Product 的 Name 至少要和 Package 中的 一个一致。
+                                }
+                        }
+                        goto IL_EC;
+                }
+                IL_F0:
+                if (!text.Equals(text2))
+                {
+                        i++;
+                        continue;
+                }
+                spr眃_ProductInfo = spr眃_ProductInfo2;
+                IL_111:
+                if (spr眃_ProductInfo == null)
+                {
+                        return null;
+                }
+                if (spr璾.권_CheckBlackList(A_0)) //判断 黑名单，自己构建的许可证可以无视这个
+                {
+                        A_0.긲_InValid(true); //在就知道 之前没涉及到 字段 true 的情况为失效
+                        A_0.께_ErrorMsg("Your license has been blacklisted, please contact E-ICEBLUE sales to obtain a new license.");
+                        return A_0;
+                }
+                spr瞩_SubscriptionType spr瞩_SubscriptionType = spr眃_ProductInfo.긲_SubscriptionInfo().께_SubscriptionType();
+                if (spr瞩_SubscriptionType == spr瞩_SubscriptionType.꼫_CloudServer) //云
+                {
+                        // CloudServer 的订阅模式需要额外解析 ServerInfo 我们不需要 可以略过
+                        if (string.IsNullOrEmpty(A_0.늼_GetServerInfoString())) 
+                        {
+                                return null;
+                        }
+                        List<spr畤> list = spr甑.꺅();
+                        if (list == null && list.Count <= 0)
+                        {
+                                return null;
+                        }
+                        string text3 = spr甑.권(A_0.늼_GetServerInfoString());
+                        spr疷 spr疷 = new spr疷(text3);
+                        if (string.IsNullOrEmpty(spr疷.권()) || string.IsNullOrEmpty(spr疷.귟()))
+                        {
+                                return null;
+                        }
+                        bool flag = false;
+                        foreach (spr畤 spr畤 in list)
+                        {
+                                if (!flag && spr疷.귟().Contains(spr畤.귟()) && spr疷.권().Contains(spr畤.긲()))
+                                {
+                                        flag = true;
+                                        break;
+                                }
+                        }
+                        if (!flag)
+                        {
+                                return null;
+                        }
+                }
+                //LicenseType 为 demo 或 unknow 需要 验证 过期时间是否小于当前时间
+                if (A_0.귟_LicenseType() == spr碢_LicenseType.귟_demo || A_0.귟_LicenseType() == spr碢_LicenseType.꺅_unknow)
+                {
+                        DateTime dateTime2 = DateTime.Now.ToUniversalTime();
+                        A_0.긲_InValid(A_0.꽾_ExpiredDate() < dateTime2);
+                }
+                if (A_0.덢_InValid()) //失效就直接返回
+                {
+                        return A_0;
+                }
+                if (dateTime != null) //如果程序集有发布时间 则 ExpiredDate 需要 大于 发布时间，ExpiredDate 看来是必填
+                {
+                        A_0.긲_InValid(A_0.꽾_ExpiredDate() < dateTime);
+                }
+                if (A_0.덢_InValid()) //失效就直接返回
+                {
+                        return A_0;
+                }
+
+                // LicensedDate 和 ExpiredDate 再和 ProductVersion 做了一层比较，不重要 大就完事了！
+                int num = spr璾.권(A_0.꼫_GetLicensedDate(), A_0.꽾_ExpiredDate());                 
+                if (spr璾.권(spr璾.권(spr眃_ProductInfo.귟_GetVersion(), A_0.꼫_GetLicensedDate()), (packageAttribute != null) ? packageAttribute.Version : string.Format("{0}.{1}", name.Version.Major, name.Version.Minor)) > num)
+                {
+                        A_0.긲_InValid(true);
+                }
+                if (A_0.덢_InValid())
+                {
+                        return A_0;
+                }
+
+                //如果之前没判定为失效的话 
+                //如果订阅类型为 Developer 或 SiteEnterprise 且 ExpiredDate 大于当前时间
+                //会将 License 上报到 服务器？？？
+                if (!A_0.덢_InValid() && (spr瞩_SubscriptionType == spr瞩_SubscriptionType.귟_Developer || spr瞩_SubscriptionType == spr瞩_SubscriptionType.꺅_SiteEnterprise) && A_0.꽾_ExpiredDate() >= DateTime.Now)
+                {
+                        try
+                        {
+                                if (!spr笺.꺅_IsInServerBlackList()) //如果服务器返回 1 或者 别的 就会标记为 true。 然后 再走就默认失效了。
+                                {
+
+                                        spr笺.긲_ReportLicenseToServer(A_0.넝_GetSerialNumberOrMD5LicenseKey(), A_0.긲_GetUsername(), (int)spr瞩_SubscriptionType, spr竧.권_DateFormate(A_0.꽾_ExpiredDate()));
+                                        goto IL_36A;
+                                }
+                                A_0.긲_InValid(true);
+                        }
+                        catch (Exception ex)
+                        {
+                                spr竧.권("LicenseUtilities_Validate", ex);
+                                goto IL_36A;
+                        }
+                        return A_0;
+                }
+                IL_36A:
+                if (A_0.귟_LicenseType() == spr碢_LicenseType.꺅_unknow)
+                {
+                        A_0.권_LicenseType(spr碢_LicenseType.긲_runtime);
+                }
+                return A_0;
+        }
+        goto IL_111;
+}
