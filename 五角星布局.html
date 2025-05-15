@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五角星按钮布局</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            height: 450px; /* 减小高度缩小行间距 */
+            margin: 0 auto;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .btn {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 20px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+            padding: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(-5px);
+        }
+        
+        /* 中间按钮悬停修正 */
+        .btn-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .btn-3:hover {
+            transform: translate(-50%, calc(-50% - 10px));
+        }
+        
+        .btn-3:active {
+            transform: translate(-50%, calc(-50% - 5px));
+        }
+        
+        .btn-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 12px;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover .btn-icon {
+            transform: scale(1.1);
+        }
+        
+        .btn-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3));
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover::before {
+            opacity: 1;
+        }
+        
+        /* 按钮定位 - 调整间距 */
+        .btn-1 {
+            top: 20px; /* 减小上边距 */
+            left: 50px; /* 增加左边距 */
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 100%);
+        }
+        
+        .btn-2 {
+            top: 20px; /* 减小上边距 */
+            right: 50px; /* 增加右边距 */
+            background: linear-gradient(45deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+        
+        .btn-3 {
+            background: linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%);
+        }
+        
+        .btn-4 {
+            bottom: 20px; /* 减小下边距 */
+            left: 50px; /* 增加左边距 */
+            background: linear-gradient(45deg, #ffc3a0 0%, #ffafbd 100%);
+        }
+        
+        .btn-5 {
+            bottom: 20px; /* 减小下边距 */
+            right: 50px; /* 增加右边距 */
+            background: linear-gradient(45deg, #a6c1ee 0%, #fbc2eb 100%);
+        }
+        
+        /* 通知公告栏 - 全宽美化版 */
+        .announcement-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 18px 0;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .announcement-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 25px;
+        }
+        
+        .announcement-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .announcement-title::before {
+            content: "";
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>') no-repeat center;
+            margin-right: 12px;
+        }
+        
+        .announcement-marquee {
+            display: flex;
+            align-items: center;
+        }
+        
+        .announcement-content {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            position: relative;
+            padding-left: 36px; /* 为图标留出空间 */
+        }
+        
+        .announcement-content::before {
+            content: "❗";
+            position: absolute;
+            left: 0;
+            top: 2px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .container {
+                height: 380px;
+            }
+            
+            .btn {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .btn-1, .btn-4 {
+                left: 20px;
+            }
+            
+            .btn-2, .btn-5 {
+                right: 20px;
+            }
+            
+            .btn-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .btn-text {
+                font-size: 15px;
+            }
+            
+            .announcement-title {
+                font-size: 17px;
+            }
+            
+            .announcement-content {
+                font-size: 13px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                height: 320px;
+            }
+            
+            .btn {
+                width: 110px;
+                height: 110px;
+                border-radius: 15px;
+                padding: 15px;
+            }
+            
+            .btn-1, .btn-4 {
+                left: 15px;
+            }
+            
+            .btn-2, .btn-5 {
+                right: 15px;
+            }
+            
+            .btn-icon {
+                width: 45px;
+                height: 45px;
+                margin-bottom: 8px;
+            }
+            
+            .btn-text {
+                font-size: 13px;
+            }
+            
+            .announcement-container {
+                padding: 0 15px;
+            }
+            
+            .announcement-title {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+            
+            .announcement-title::before {
+                width: 20px;
+                height: 20px;
+                margin-right: 8px;
+            }
+            
+            .announcement-content {
+                font-size: 12px;
+                padding-left: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="btn btn-1" onclick="handleClick(1)">
+            <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="音乐" class="btn-icon">
+            <span class="btn-text">音乐播放</span>
+        </button>
+        
+        <button class="btn btn-2" onclick="handleClick(2)">
+            <img src="https://cdn-icons-png.flaticon.com/512/2936/2936886.png" alt="照片" class="btn-icon">
+            <span class="btn-text">照片相册</span>
+        </button>
+        
+        <button class="btn btn-3" onclick="handleClick(3)">
+            <img src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" alt="视频" class="btn-icon">
+            <span class="btn-text">视频中心</span>
+        </button>
+        
+        <button class="btn btn-4" onclick="handleClick(4)">
+            <img src="https://cdn-icons-png.flaticon.com/512/2997/2997132.png" alt="设置" class="btn-icon">
+            <span class="btn-text">系统设置</span>
+        </button>
+        
+        <button class="btn btn-5" onclick="handleClick(5)">
+            <img src="https://cdn-icons-png.flaticon.com/512/1570/1570887.png" alt="帮助" class="btn-icon">
+            <span class="btn-text">帮助中心</span>
+        </button>
+    </div>
+
+    <!-- 通知公告栏 - 美化版 -->
+    <div class="announcement-bar">
+        <div class="announcement-container">
+            <div class="announcement-title">系统公告</div>
+            <div class="announcement-content">
+                欢迎使用我们的系统！当前版本v1.0.0，如有任何问题请联系客服。系统将于每周日凌晨2:00-3:00进行维护更新，届时将暂停服务，给您带来不便敬请谅解。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleClick(btnNumber) {
+            const btnTexts = [
+                "音乐播放", 
+                "照片相册", 
+                "视频中心", 
+                "系统设置", 
+                "帮助中心"
+            ];
+            
+            // 创建浮动提示效果
+            const notification = document.createElement('div');
+            notification.textContent = `已选择: ${btnTexts[btnNumber-1]}`;
+            notification.style.position = 'fixed';
+            notification.style.bottom = '90px'; // 调整位置，避免与公告栏重叠
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            notification.style.color = 'white';
+            notification.style.padding = '12px 24px';
+            notification.style.borderRadius = '24px';
+            notification.style.zIndex = '1000';
+            notification.style.fontSize = '15px';
+            notification.style.animation = 'fadeInOut 2s forwards';
+            
+            document.body.appendChild(notification);
+            
+            // 动画结束后移除通知
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+        
+        // 添加键盘快捷键支持
+        document.addEventListener('keydown', function(event) {
+            if (event.key >= '1' && event.key <= '5') {
+                const btnNumber = parseInt(event.key);
+                handleClick(btnNumber);
+                
+                // 添加按下动画效果
+                const btn = document.querySelector(`.btn-${btnNumber}`);
+                if(btnNumber === 3) {
+                    btn.style.transform = 'translate(-50%, calc(-50% - 5px))';
+                    setTimeout(() => {
+                        btn.style.transform = 'translate(-50%, calc(-50% - 10px))';
+                    }, 100);
+                } else {
+                    btn.style.transform = 'translateY(-5px)';
+                    setTimeout(() => {
+                        btn.style.transform = 'translateY(-10px)';
+                    }, 100);
+                }
+            }
+        });
+    </script>
+    
+    <style>
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+    </style>
+</body>
+</html>
